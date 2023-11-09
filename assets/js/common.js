@@ -22,7 +22,7 @@ function get_money_exchange_form( buySell ) {
                                 <option value="">Select Receive Method</option>\
                                 <option value="method1">Skrill</option>\
                                 <option value="method2">Neteller</option>\
-                                <option value="method3">Method 3</option>\
+                                <option value="method3">Perfect Money</option>\
                             </select><br>\
                             <label for="send_amount">Send Amount:</label>\
                             <input type="number" id="send_amount" name="send_amount" required><br>\
@@ -54,15 +54,15 @@ function navigate_tabs( clickClassHolderIdName, clickClassName, addSelectedClass
         $("#"+adminNavHolderId).show();
         $("#"+adminNavHolderId).siblings().hide();
         //End
-        let loadedIds ="";
+        /*let loadedIds ="";
         let end_point = "../main/jsvalidation/postsLoadForManage.php";
         let body_data = {
             action: adminNavId,
             limit: display_limit,
             loadedIds : loadedIds
         };
-        get_data_from_api( end_point, body_data, adminNavHolderId, display_type );
-
+        // get_data_from_api( end_point, body_data, adminNavHolderId, display_type );
+*/
     });
 }
 
@@ -103,8 +103,8 @@ function get_data_from_api( end_point, body_data, appendedId, display_type ){
                         let finalData = result_data.data;
                         alert(result_data.message);
                         console.log(finalData);
-                        let card = buy_sale_card_for_manage();
-                        $("#butDollar_holder").append( card );
+                        // let card = buy_sale_card_for_manage();
+                        // $("#butDollar_holder").append( card );
                     } else {
                         console.log(result_data['error_code']);
                         console.log(result_data['data']);
@@ -116,6 +116,24 @@ function get_data_from_api( end_point, body_data, appendedId, display_type ){
     }else{
         alert("Please Provide Valid Api End Point");
     }
+}
+
+function registrationSubmitForm( validateUrl ) {
+    var formData = new FormData($("#registrationForm")[0]);
+
+    $.ajax({
+        url: validateUrl,
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+        }
+    });
 }
 
 

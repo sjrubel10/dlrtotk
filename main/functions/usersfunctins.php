@@ -6,11 +6,15 @@
  * Time: 10:40 PM
  */
 function var_test_die( $data ){
-    var_dump($data);
+    echo "<pre>";
+        var_dump($data);
+    echo "</pre>";
     die();
 }
 function var_test( $data ){
-    var_dump($data);
+    echo "<pre>";
+        var_dump($data);
+    echo "</pre>";
 }
 function getUserIdByProfileKey( $profileKey ) {
     $conn = Db_connect();
@@ -32,6 +36,7 @@ function getUserIdByProfileKey( $profileKey ) {
 
     return $userId;
 }
+
 function getUserIdByusername( $username ) {
     $conn = Db_connect();
 
@@ -72,12 +77,17 @@ function getUserDataById( $userId ) {
     return $userData;
 }
 
-function user_registration( $user_input_data ){
+function user_registration( $user_input_data, $profileimage ){
     $conn = Db_connect();
-    $email = $user_input_data['email'];
-    $password = password_hash($user_input_data['password'], PASSWORD_DEFAULT);
-    $firstName = $user_input_data['firstName'];
-    $gender = $user_input_data['gender'];
+    $email = isset( $user_input_data['email'] ) ? sanitize( $user_input_data['email'] ) : "" ;
+    $delimiter = "@";
+    $email_explode = explode($delimiter, $email);
+    $username = $email_explode[0];
+
+// Print the result
+    $password = password_hash( $user_input_data['password'], PASSWORD_DEFAULT );
+    $firstName = isset( $user_input_data['firstName'] ) ? sanitize($user_input_data['firstName'] ) : "";
+    $gender =  isset( $user_input_data['gender'] ) ? sanitize($user_input_data['gender']): "";
     $userkey = substr(md5($firstName.$email), 0, 8);
 
     $result = 0;
@@ -85,10 +95,10 @@ function user_registration( $user_input_data ){
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "Invalid email format.";
     } else {
-        $sql = "INSERT INTO users ( `mail`, `userkey`, `password`, `full_name`, `gender` ) VALUES ( ?, ?, ?, ?, ? )";
+        $sql = "INSERT INTO users ( `mail`, username, `userkey`, `profileimage` , `password`, `full_name`, `gender` ) VALUES ( ?, ?, ?, ?, ?, ?, ? )";
         $stmt = $conn->prepare($sql);
         if( $stmt ){
-            $stmt->bind_param("sssss", $email, $userkey, $password, $firstName, $gender );
+            $stmt->bind_param("sssssss", $email, $username, $userkey, $profileimage, $password, $firstName, $gender );
             if ( $stmt->execute() ) {
                 $result = 'User Account Successfully Created';
             } else {

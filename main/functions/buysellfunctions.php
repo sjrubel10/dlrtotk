@@ -39,6 +39,25 @@ function insertBuyData( $insert_data, $user_id ){
     return $result;
 }
 
+function getIDBytransactionKey( $transaction_key ) {
+    $conn = Db_connect();
+    $sql = "SELECT ID FROM `buysell` WHERE transaction_key = ?";
+    $stmt = $conn->prepare($sql);
+    if( $stmt ) {
+        $stmt->bind_param("s", $transaction_key);
+        $stmt->execute();
+        $stmt->bind_result($transactionId);
+        $stmt->fetch();
+        $stmt->close();
+
+        $conn->close();
+    }else{
+        $transactionId = false;
+    }
+
+    return $transactionId;
+}
+
 function selectBuySellData( $user_id= '' , $transaction_type='', $already_loaded_ids=[] ) {
     $conn = Db_connect();
 
@@ -55,21 +74,21 @@ function selectBuySellData( $user_id= '' , $transaction_type='', $already_loaded
     $and = true;
     $is_multiple = 0;
     if( $user_id ==='' &&  $transaction_type === '' ){
-        $condition = '';
+        $condition = ' WHERE `is_transaction_done` = 1';
         $prepare = '';
         $value = "";
         $bindPrm =false;
         $and = false;
     }else if( $user_id !=='' &&  $transaction_type === '' ){
-        $condition = "WHERE `user_id` = ?";
+        $condition = "WHERE `user_id` = ? AND `is_transaction_done`=1 ";
         $prepare = 'i';
         $value = "$user_id";
     }else if( $user_id ==='' &&  $transaction_type !== '' ){
-        $condition = "WHERE `transaction_type` = ?";
+        $condition = " WHERE `transaction_type` = ? AND `is_transaction_done`=0";
         $prepare = 's';
         $value = "$transaction_type";
     }else{
-        $condition = "WHERE `user_id`=? AND `transaction_type` = ?";
+        $condition = "WHERE `user_id`=? AND `transaction_type` = ? AND `is_transaction_done`=0";
         $prepare = "is";
         $is_multiple = 1;
         $value = "$user_id, $transaction_type";
@@ -81,7 +100,7 @@ function selectBuySellData( $user_id= '' , $transaction_type='', $already_loaded
         $and = "";
     }
     // Define the query with a prepared statement
-    $query = "SELECT * FROM `buysell` INNER JOIN users ON `buysell`.`user_id` = `users`.`id` $condition $and $not_Id ";
+    $query = "SELECT * FROM `buysell` INNER JOIN users ON `buysell`.`user_id` = `users`.`id` $condition $and $not_Id LIMIT 150";
     $stmt = $conn->prepare($query);
     if( $bindPrm ){
         if( $is_multiple === 1 ){
@@ -108,13 +127,31 @@ function selectBuySellData( $user_id= '' , $transaction_type='', $already_loaded
         unset($row['id']);
         unset($row['username']);
         unset($row['active']);
-        $data[] = $row;
+        $data[$row['transaction_key']] = $row;
 
     }
-
     // Close the statement and the database connection
     $stmt->close();
     $conn->close();
 
     return $data;
+}
+
+function transaction_confirmation( $transactionId, $adminId ){
+        $conn = Db_connect();
+        $result = false;
+        $sql = " UPDATE `buysell` SET `is_transaction_done` = 1, `admin_id` = ? WHERE `ID` = ?";
+        // Create a prepared statement
+        $stmt = $conn->prepare($sql);
+        if ($stmt === false) {
+            die("Error in the prepared statement: " . $conn->error);
+        }
+        // Bind the parameter
+        $stmt->bind_param("ii", $adminId, $transactionId ); // "i" represents an integer
+        // Execute the statement
+        $result = $stmt->execute();
+        // Close the statement and connection
+        $stmt->close();
+        $conn->close();
+        return $result;
 }

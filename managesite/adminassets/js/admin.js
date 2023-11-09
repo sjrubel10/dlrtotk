@@ -10,22 +10,6 @@ $(document).ready(function() {
         $("#" + adminNavHolderId).show();
         $("#" + adminNavHolderId).siblings().hide();
 
-        if (adminNavId === 'manage-buy_sell') {
-            if ( is_post_loaded === 0) {
-                is_post_loaded++;
-                let loadedIds = "";
-                let display_limit = 20;
-                let end_point = "../main/jsvalidation/buySellDataForManage.php";
-                let body_data = {
-                    action: 'buy',
-                    limit: display_limit,
-                    loadedIds: loadedIds
-                };
-                let adminNavHolderId = 'publish_holder';
-                const display_type = 'display_news_control';
-                var buyData = get_data_from_api(end_point, body_data, adminNavHolderId, display_type );
-            }
-        }
     });
 
     $("#adminContainer").on("click", ".makeActiveSubmit", function () {
@@ -45,22 +29,6 @@ $(document).ready(function() {
         const appendedId = '';
         get_data_from_api( end_point, body_data, appendedId, display_type );
 
-    });
-
-    $("#adminContainer").on("click", ".removeFromAdmin", function () {
-        let clickedId = $(this).attr('id');
-        let clickedIdary = clickedId.split('_');
-        let userkey = clickedIdary[1];
-        const body_data ={
-            admin : 0,
-            userkey : userkey,
-            admin_level:0,
-            deleteOrAdd:'removeAdmin'
-        };
-        const display_type = 'make_admin';
-        const end_point = '../main/jsvalidation/make_delete_admin.php';
-        const appendedId = '';
-        get_data_from_api( end_point, body_data, appendedId, display_type );
     });
 
 });

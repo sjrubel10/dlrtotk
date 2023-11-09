@@ -11,7 +11,6 @@ if( $totaluser > 0 ) {
                                 <th>Username</th>
                                 <th>Mail</th>
                                 <th>Make Active</th>
-                                <th>User Control</th>
                                 <th>Action</th>
                             </tr>
                         </thead>';

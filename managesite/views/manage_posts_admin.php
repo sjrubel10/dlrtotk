@@ -23,54 +23,131 @@
         border-bottom: 2px solid #3498db;
     }
 </style>
-<?php
-//ALTER TABLE `news` ADD `post_status` TINYINT(1) NOT NULL DEFAULT '1' AFTER `recorded`;
-function make_display_tab_and_tab_holder_html( $clcikedClass, $page_heading, $nav_names=[], $selected_class ){
-    $navs = '';
-    $nav_holders = '';
-    $i = 0;
-    foreach ( $nav_names as $nav => $nav_data ){
 
-        if( $i === 0 ){
-            $display = 'block';
-            $is_selected_class = $selected_class;
-        }else {
-            $display = 'none';
-            $is_selected_class = '';
+<?php
+function table_head_html( $forDollerBuy, $type ){
+    if( $type === 'all' ){
+        if (($dellkey = array_search('Action', $forDollerBuy)) !== false) {
+            unset($forDollerBuy[$dellkey]);
         }
-        $nav = trim( $nav );
-        $nav_holder_id = $nav.'_holder';
-        $navs .= "<div id='$nav' class='tab $is_selected_class $clcikedClass'>$nav_data</div>";
-        $nav_holders .= "<div id='$nav_holder_id' class='tabContentHolder' style='display: $display'>$nav_data</div>";
+    }
+
+    if( $type === 'sell' ){
+        if (($dellkey = array_search('bKash Transaction ID', $forDollerBuy)) !== false) {
+            unset($forDollerBuy[$dellkey]);
+        }
+    }
+
+    $usersDataHtml = '<thead><tr>';
+    foreach ( $forDollerBuy as $key => $userData) {
+
+        //    $usersDataHtml .= '<div class=""> <span class="">'.$userData['username'].'</span> </div>';
+        $usersDataHtml .= '<th>'.$userData.'</th>';
+    }
+    $usersDataHtml .= '</tr></thead>';
+    return $usersDataHtml;
+}
+function table_body_html( $dataforDollerBuy, $type ){
+    $i =1;
+    $usersDataHtml1 = '<tbody>';
+    foreach ( $dataforDollerBuy as $key => $getData) {
+
+        if( $type === 'all' ){
+            $need_action = '';
+        }else{
+            $need_action = '<td class="makeConfirm"> <span id="confirm_'.$key.'" class="makeConfirmText">Confirm</span> </td>';
+        }
+
+        if( $type === 'sell' ){
+            $bksTrID = '';
+        }else{
+            $bksTrID = '<td>' . $getData['bKash_tRX_ID'] . '</td>';
+        }
+
+        $usersDataHtml1 .= '<tr id="'.$key.'">
+                                <td>' . $i. '</td>
+                                <td>' . $getData['full_name'] . '</td>
+                                <td>' . $getData['mail'] . '</td>
+                                <td> 0175362025 </td>
+                                <td>' . $getData['bKash_number'] . '</td>
+                                '.$bksTrID.'
+                                <td>' . $getData['send_amount'] . '</td>
+                                <td>' . $getData['receive_amount'] . '</td>
+                                <td>' . $getData['receive_method'] . '</td>
+                                <td>' . $getData['send_method'] . '</td>
+                                <td>' . $getData['transaction_date'] . '</td>
+                                '.$need_action.'
+                            </tr>';
         $i++;
     }
-    $tab_and_tab_holder_html = "<div class=''>
-        <h1> $page_heading </h1>
-        <div class='post-card_holde'>
-             <div class='tabs'>
-                $navs
-            </div>
-            <div class='tabsContentHolder'>
-                $nav_holders
-            </div>
-        </div>
-    </div>";
-    return $tab_and_tab_holder_html;
+    $usersDataHtml1 .= '</tbody>';
+
+    return $usersDataHtml1;
 }
-$nav_names = array(
-        'butDollar'=>'Buy Dollar',
-        'sellDollar'=>'Sell Dollar',
-);
-$clcikedClass = 'controlPost';
-$selected_class = 'adminNavSelect';
 
 ?>
-<div class="post-card_holde">
-    <?php echo make_display_tab_and_tab_holder_html( $clcikedClass, 'Manage Posts', $nav_names, $selected_class );?>
-</div>
 
+<div class="post-card_holde">
+    <div class="tabs">
+        <div id="buyDollar" class="tab controlPost adminNavSelect">Buy Dollar</div>
+        <div id="sellDollar" class="tab controlPost">Sell Dollar</div>
+        <div id="allbuySellDollar" class="tab controlPost">All Done</div>
+    </div>
+    <div class="tabsContentHolder">
+        <div id="buyDollar_holder" class="tabContentHolder" style="display: block;">
+            <h3>Buy Dollar request</h3>
+            <div class="buyRequestHolder">
+                <?php if( count( $buy_data )> 0 ){?>
+                    <table class="requestTable" id="buyrequestTable">
+                        <?php
+                            echo table_head_html( $forDollerBuy, 'buy' );
+                            echo table_body_html( $buy_data,'buy' );
+                        ?>
+                    </table>
+                <?php } else {?>
+                    <div class="emptyResultHolder"><div class="emptyResultText">No Buy request Available</div></div>
+                <?php }?>
+            </div>
+        </div>
+        <div id="sellDollar_holder" class="tabContentHolder" style="display: none;">
+            <h3> Sell Dollar request</h3>
+            <div class="buyRequestHolder">
+                <?php if( count( $sell_data )> 0 ){?>
+                    <table class="requestTable" id="sellrequestTable">
+                        <?php
+                            echo table_head_html( $forDollerBuy, 'sell' );
+                            echo table_body_html( $sell_data, 'sell' );
+                        ?>
+                    </table>
+                <?php } else {?>
+                    <div class="emptyResultHolder"><div class="emptyResultText">No Sell request Available</div></div>
+                <?php }?>
+            </div>
+        </div>
+        <div id="allbuySellDollar_holder" class="tabContentHolder" style="display: none;">
+            <h3> All Done</h3>
+            <div class="buyRequestHolder">
+                <?php if( count( $all_data )> 0 ){?>
+                    <table class="requestTable" id="sellrequestTable">
+                        <?php
+                            echo table_head_html( $forDollerBuy, 'all' );
+                            echo table_body_html( $all_data, 'all' );
+                        ?>
+                    </table>
+                <?php } else {?>
+                    <div class="emptyResultHolder"><div class="emptyResultText">No Confirmation Available</div></div>
+                <?php }?>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+$clcikedClass = 'controlPost';
+$selected_class = 'adminNavSelect';
+?>
 <script>
     $(document).ready(function(){
+        let isAdmin = <?php echo json_encode( $is_admin )?>;
         let addSelectedClass = <?php echo json_encode( $selected_class )?>;
         let clickClassName = <?php echo json_encode( $clcikedClass )?>;
         let clickClassHolderIdName = 'adminContainer';
@@ -78,27 +155,37 @@ $selected_class = 'adminNavSelect';
         const display_type = 'display_news_control';
         navigate_tabs( clickClassHolderIdName, clickClassName, addSelectedClass, display_type, display_limit );
 
-        $( "#adminContainer" ).on( "click", ".managepost", function() {
-            let clickedID = $(this).attr('id').trim();
-            let splitResult = clickedID.split('_');
-            let action = splitResult[0];
-            let postKey = splitResult[1];
-
-            /*$.post(
-                "../main/jsvalidation/jsmanagecontent.php",
-                {
-                    action: action,
-                    postKey: postKey
-                },
-                function(data) {
-                    let result_data = JSON.parse( data );
-                    if ( result_data['success'] ) {
-                        $("#"+postKey).hide();
-                    } else {
-                        console.log("Non");
-                    }
-                });*/
+        $("#adminContainer").on("click", ".makeConfirmText", function () {
+            if( isAdmin ) {
+                let clickedId = $(this).attr('id');
+                let clickedIdary = clickedId.split('_');
+                let buySellKey = clickedIdary[1];
+                const body_data = {
+                    buySellKey: buySellKey
+                };
+                const end_point = '../main/jsvalidation/confirmTransaction.php';
+                $.post(
+                    end_point,
+                    body_data,
+                    function (data) {
+                        try {
+                            let result_data = JSON.parse(data);
+                            if (result_data['success']) {
+                                $("#"+buySellKey).hide();
+                                alert(result_data.message);
+                            } else {
+                                console.log(result_data['error_code']);
+                                console.log(result_data['data']);
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    });
+            }
         });
 
+
     });
+
+
 </script>

@@ -1,27 +1,3 @@
-/*$(document).ready(function() {
-    $("#registrationForm").submit(function(event) {
-        event.preventDefault();
-
-        // Frontend validation (you can add more checks)
-        let isValid = true;
-        $(".error-message").text("");
-
-        if ($("#username").val() === "") {
-            $("#usernameError").text("Username is required.");
-            isValid = false;
-        }
-
-        // Add validation for other fields (email, password, first name, last name, age, etc.)
-
-        if (isValid) {
-            let inputData = $("#registrationForm").serialize();
-            // Submit the form via AJAX to the PHP script for backend validation
-            $.post("main/api/registration.php", inputData, function(data) {
-                $("#message").html(data);
-            });
-        }
-    });
-});*/
 
 $(document).ready(function() {
 
@@ -65,8 +41,26 @@ $(document).ready(function() {
 
         if (isValid) {
             // Submit the form via AJAX to the PHP script for backend validation
-            $.post("main/jsvalidation/registration.php", $("#registrationForm").serialize(), function(data) {
+            /*$.post("main/jsvalidation/registration.php", $("#registrationForm").serialize(), function(data) {
                 $("#message").html(data);
+            });*/
+            // let formData = $("#registrationForm").serialize();
+            var formData = new FormData($("#registrationForm")[0]);
+            console.log( formData );
+            $.ajax({
+                type: "POST",
+                url: 'main/jsvalidation/registration.php',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    var result= JSON.parse(response);
+                    console.log( result ); // Show response from PHP (success or error message)
+                    if(result['success']){
+                        window.location.href = "../index.php";
+                    }
+                    // You can redirect to another page or clear the form if needed
+                }
             });
         }
     });

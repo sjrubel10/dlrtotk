@@ -112,6 +112,9 @@ select {
     width: calc(50% - 10px );
     padding: 5px;
 }
+.ratetableColumnHolder{
+    /*width: 33%;*/
+}
 .saleRatetable{
     display: block;
     float: left;

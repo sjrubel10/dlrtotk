@@ -5,8 +5,18 @@
     $already_loaded_ids = [];
     $usersData = getUsersData( $conn, $already_loaded_ids, $display_limit );
 
-//    $buy_sell_data =  selectBuySellData( $user_id = '' , $transaction_type='buy' );
-//    var_test_die( $buy_sell_data );
+    $buy_data =  selectBuySellData( $user_id = '' , $transaction_type='buy' );
+    $sell_data =  selectBuySellData( $user_id = '' , $transaction_type='sell' );
+    $all_data =  selectBuySellData( $user_id = '' , $transaction_type='' );
+//    var_test_die( $buy_data );
+
+$forDollerBuy = [ "No","User Name", "userEmail", "Contact Number", "Bkash Number", "bKash Transaction ID", "Send Amount", "Received Amount",
+    "Received Method", "Send Method",  "Transaction Date", "Action"
+];
+
+$filename = 'siteInfo.json';
+$siteInfoData = getDataFromJsonFile( $filename );
+
 ?>
 <!DOCTYPE html>
     <html lang="en">
@@ -17,6 +27,7 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="adminassets/css/admin.css">
+        <link rel="stylesheet" href="adminassets/css/siteinfo.css">
         <link rel="stylesheet" href="../assets/css/header.css">
         <link rel="stylesheet" href="../assets/css/common.css">
         <script src="../assets/js/common.js"></script>
@@ -30,6 +41,7 @@
                     <ul>
                         <li class="manage-admins adminTabChange" id="manage-users">Manage Users</li>
                         <li class="manage-posts adminTabChange" id="manage-buy_sell">Manage Buy Sell</li>
+                        <li class="updateSiteInfo adminTabChange" id="updateSiteInfo">Update Site Info</li>
                     </ul>
                 </div>
                 <div class="admincontentholder">
@@ -42,6 +54,9 @@
                     </div>
                     <div id="manage-buy_sell_holder" class="tab-content">
                         <?php require "views/manage_posts_admin.php"?>
+                    </div>
+                    <div id="updateSiteInfo_holder" class="tab-content">
+                        <?php require "views/update_site_info.php"?>
                     </div>
                 </div>
             </div>

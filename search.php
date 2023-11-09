@@ -1,11 +1,14 @@
 <?php
 require  "main/init.php";
+$filename = 'managesite/siteInfo.json';
+$siteInfoData = getDataFromJsonFile( $filename );
 $conn = Db_connect();
 $display_limit = 20;
 
 if( isset( $_GET['searchkey'] ) && !empty( $_GET['searchkey'] ) ){
     $search = $_GET['searchkey'];
-    $news = getNews_search( $conn, $display_limit, $search );
+//    $news = getNews_search( $conn, $display_limit, $search );
+    $news = [];
 }else{
     $news = [];
 }
@@ -25,16 +28,7 @@ if( isset( $_GET['searchkey'] ) && !empty( $_GET['searchkey'] ) ){
 <body>
 <?php include_once "views/header.php"?>
 <div class="newCardHolder">
-    <div class="leftnavbarHolder" id="leftnavbarHolder">
-        <?php include "views/leftnavbar.php"?>
-    </div>
-    <div class="maincontentHolder">
-        <?php include "views/indexcontent.php"?>
-    </div>
-    <div class="rightsideHolder">
-        <?php include "views/rightsidebar.php"?>
-    </div>
-
+    <h2>Search<h2>
 </div>
 </body>
 </html>

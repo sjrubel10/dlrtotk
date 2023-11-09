@@ -6,6 +6,8 @@
  * Time: 10:10 PM
  */
 require "main/init.php";
+$filename = 'managesite/siteInfo.json';
+$siteInfoData = getDataFromJsonFile( $filename );
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,11 +31,11 @@ require "main/init.php";
     <div class="logincontainer">
         <h2>Login</h2>
         <form id="loginForm" method="post">
-            <div class="form-group">
+            <div class="login_form-group">
                 <label for="username">Email:</label>
                 <input type="text" name="username" id="username" required>
             </div>
-            <div class="form-group">
+            <div class="login_form-group">
                 <label for="password">Password:</label>
                 <input type="password" name="password" id="password" required>
             </div>
